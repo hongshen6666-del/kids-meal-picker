@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>今天吃什么 - 朔州孩子版</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
+      color: #7c2d12;
+    }
+    .container { max-width: 1180px; margin: 0 auto; padding: 24px; }
+    .hero {
+      background: rgba(255,255,255,0.84);
+      border: 2px solid #fdba74;
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 18px 50px rgba(124,45,18,0.08);
+      text-align: center;
+    }
+    h1 { margin: 0 0 10px; font-size: 42px; line-height: 1.15; }
+    .subtitle { margin: 0; font-size: 18px; color: #9a3412; }
+    .grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 24px; margin-top: 24px; }
+    .card {
+      background: rgba(255,255,255,0.88);
+      border: 2px solid #fdba74;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 12px 35px rgba(124,45,18,0.08);
+    }
+    .section-title { margin: 0 0 16px; font-size: 24px; font-weight: 700; }
+    .chips, .checkboxes, .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip {
+      border: 2px solid #fdba74; background: #fff; color: #9a3412; border-radius: 999px;
+      padding: 10px 16px; cursor: pointer; font-size: 15px; transition: 0.2s ease;
+    }
+    .chip:hover, button:hover { transform: translateY(-1px); }
+    .chip.active { background: #f97316; color: white; border-color: #f97316; }
+    .toggle {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; background: #fff7ed;
+      border: 1px solid #fdba74; border-radius: 14px; color: #9a3412; font-size: 14px;
+    }
+    button.primary, button.secondary {
+      border: none; border-radius: 16px; padding: 14px 20px; font-size: 16px; cursor: pointer; transition: 0.2s ease;
+    }
+    button.primary { background: #ea580c; color: white; box-shadow: 0 8px 20px rgba(234,88,12,0.25); }
+    button.secondary { background: #fff; color: #9a3412; border: 2px solid #fdba74; }
+    .result-box {
+      min-height: 240px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+      background: linear-gradient(180deg, #fff 0%, #fffbeb 100%); border: 2px dashed #fb923c; border-radius: 24px; padding: 20px;
+    }
+    .meal-type { display: inline-block; padding: 8px 14px; background: #ffedd5; border-radius: 999px; color: #c2410c; font-size: 14px; margin-bottom: 14px; }
+    .meal-name { font-size: 36px; font-weight: 800; line-height: 1.2; margin-bottom: 12px; color: #7c2d12; }
+    .meal-desc { font-size: 16px; line-height: 1.8; color: #9a3412; max-width: 480px; }
+    .meal-tags { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 16px; }
+    .tag { background: #fff7ed; color: #c2410c; border: 1px solid #fdba74; border-radius: 999px; padding: 6px 12px; font-size: 13px; }
+    .list, .week-grid { display: grid; gap: 10px; }
+    .list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .list-item, .week-item {
+      background: #fff7ed; border-radius: 14px; padding: 10px 12px; color: #9a3412; font-size: 14px; border: 1px solid #fed7aa;
+    }
+    .week-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .week-day { font-weight: 700; color: #7c2d12; margin-bottom: 6px; }
+    .wheel-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .wheel {
+      width: 280px; height: 280px; border-radius: 50%; border: 8px solid #ea580c; position: relative;
+      box-shadow: 0 10px 30px rgba(124,45,18,0.12); overflow: hidden; background: #fff;
+      transition: transform 4s cubic-bezier(0.18, 0.89, 0.18, 1);
+    }
+    .wheel-pointer {
+      width: 0; height: 0; border-left: 16px solid transparent; border-right: 16px solid transparent;
+      border-top: 30px solid #dc2626; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 3;
+    }
+    .wheel-center {
+      width: 54px; height: 54px; background: #fff; border: 4px solid #ea580c; border-radius: 50%;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;
+    }
+    .wheel-label {
+      position: absolute; left: 50%; top: 50%; transform-origin: 0 0; font-size: 13px; font-weight: 700; color: #7c2d12;
+      white-space: nowrap;
+    }
+    .small-note { font-size: 13px; color: #9a3412; }
+    .footer { margin-top: 20px; text-align: center; color: #9a3412; font-size: 14px; }
+    @media (max-width: 960px) {
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 32px; }
+      .meal-name { font-size: 30px; }
+      .list, .week-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <h1>今天吃什么 · 朔州孩子版</h1>
+      <p class="subtitle">偏山西朔州家常口味 · 随机抽饭 · 忌口筛选 · 不和昨天重复 · 一周菜单 · 转盘抽签</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2 class="section-title">1. 选择时间段</h2>
+        <div class="chips" id="typeChips"></div>
+
+        <h2 class="section-title" style="margin-top:20px;">2. 设置规则</h2>
+        <div class="checkboxes" id="filterBoxes"></div>
+        <div style="margin-top:12px;" class="actions">
+          <label class="toggle"><input type="checkbox" id="avoidYesterday" checked /> 不要和昨天重复</label>
+        </div>
+
+        <h2 class="section-title" style="margin-top:20px;">3. 开始随机</h2>
+        <div class="actions">
+          <button class="primary" id="pickBtn">随机抽一个</button>
+          <button class="secondary" id="pickThreeBtn">给我 3 个备选</button>
+          <button class="secondary" id="weekBtn">生成一周菜单</button>
+        </div>
+
+        <div style="margin-top:18px;" class="result-box" id="resultBox">
+          <div class="meal-type">欢迎使用</div>
+          <div class="meal-name">点一下开始抽</div>
+          <div class="meal-desc">已经加入朔州偏家常口味、忌口筛选、昨天不重复和一周菜单功能。</div>
+        </div>
+
+        <div style="margin-top:18px; display:none;" id="weekSection">
+          <h2 class="section-title">本周菜单</h2>
+          <div class="week-grid" id="weekGrid"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">转盘抽签</h2>
+        <div class="wheel-wrap">
+          <div style="position:relative;">
+            <div class="wheel-pointer"></div>
+            <div class="wheel" id="wheel">
+              <div class="wheel-center"></div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="primary" id="spinBtn">点一下转盘抽签</button>
+          </div>
+          <div class="small-note">转盘内容会根据你选的时间段和忌口条件自动变化。</div>
+        </div>
+
+        <h2 class="section-title" style="margin-top:24px;">可选菜单示例</h2>
+        <div class="list" id="menuList"></div>
+      </div>
+    </div>
+
+    <div class="footer">这个页面可以直接放到 GitHub Pages。后面还可以继续加“收藏最爱”“孩子评分”“买菜清单”“打印一周菜单”。</div>
+  </div>
+
+  <script>
+    const meals = {
+      breakfast: [
+        { name: "小米粥＋鸡蛋＋花卷", desc: "朔州家里常见早餐，暖胃又稳妥。", tags: ["早餐", "朔州家常", "软和"], avoid: [] },
+        { name: "山药南瓜粥＋馒头片", desc: "甜口一点，孩子接受度高。", tags: ["早餐", "营养", "软糯"], avoid: [] },
+        { name: "西红柿鸡蛋挂面", desc: "热乎顺口，早上吃很舒服。", tags: ["早餐", "面食", "热乎"], avoid: ["鸡蛋"] },
+        { name: "豆浆＋鸡蛋饼", desc: "上学前比较省事，也顶饱。", tags: ["早餐", "方便", "家常"], avoid: ["豆制品", "鸡蛋"] },
+        { name: "小米南瓜粥＋素包子", desc: "朔州口味偏家常，适合孩子。", tags: ["早餐", "朔州", "清淡"], avoid: [] },
+        { name: "馄饨", desc: "汤汤水水，天冷时特别合适。", tags: ["早餐", "汤食", "顺口"], avoid: [] },
+        { name: "牛奶燕麦粥＋蒸红薯", desc: "偏软糯，适合小朋友。", tags: ["早餐", "温和", "营养"], avoid: ["奶制品"] },
+        { name: "小米南瓜粥＋小花卷", desc: "适合孩子的朔州家常早餐，软和又暖胃。", tags: ["早餐", "一周菜谱", "软和"], avoid: [] },
+        { name: "山药粥＋蒸红薯＋鸡蛋饼", desc: "甜口偏软，适合孩子早上吃。", tags: ["早餐", "一周菜谱", "营养"], avoid: ["鸡蛋"] },
+        { name: "牛奶燕麦粥＋小包子", desc: "简单稳妥，孩子接受度高。", tags: ["早餐", "一周菜谱", "方便"], avoid: ["奶制品"] },
+        { name: "豆浆＋发面饼＋水煮蛋", desc: "朔州家里常见搭配，顶饱又不重。", tags: ["早餐", "一周菜谱", "家常"], avoid: ["豆制品", "鸡蛋"] },
+        { name: "小米粥＋馒头片＋蒸蛋", desc: "温和顺口，适合上学前。", tags: ["早餐", "一周菜谱", "清淡"], avoid: ["鸡蛋"] },
+        { name: "南瓜小米粥＋小肉包", desc: "早餐稍微顶饱一点，适合活动量大的孩子。", tags: ["早餐", "一周菜谱", "家常"], avoid: ["猪肉"] },
+        { name: "红枣小米粥＋蒸南瓜＋鸡蛋", desc: "颜色好看，孩子更愿意吃。", tags: ["早餐", "一周菜谱", "暖胃"], avoid: ["鸡蛋"] }
+      ],
+      lunch: [
+        { name: "过油肉＋米饭", desc: "山西很经典，孩子版可以少盐少油。", tags: ["午餐", "山西特色", "下饭"], avoid: [] },
+        { name: "西红柿炒鸡蛋＋米饭", desc: "最不容易踩雷的孩子菜单。", tags: ["午餐", "经典", "孩子友好"], avoid: ["鸡蛋"] },
+        { name: "土豆炖牛肉＋花卷", desc: "朔州这边很常见，软烂顶饱。", tags: ["午餐", "营养", "家常"], avoid: ["牛肉"] },
+        { name: "刀削面", desc: "山西代表主食，孩子一般比较能接受。", tags: ["午餐", "山西特色", "主食"], avoid: [] },
+        { name: "土豆丝炒肉＋馒头", desc: "家常快手，适合中午。", tags: ["午餐", "快手", "家常"], avoid: ["猪肉"] },
+        { name: "莜面栲栳栳＋蘸汁", desc: "晋北地区也常见，换换口味很不错。", tags: ["午餐", "朔州周边口味", "面食"], avoid: [] },
+        { name: "茄汁鸡丁＋米饭", desc: "酸甜口更适合孩子。", tags: ["午餐", "酸甜", "孩子爱吃"], avoid: ["鸡肉"] },
+        { name: "大烩菜＋饼", desc: "朔州家常感很强，冬天尤其适合。", tags: ["午餐", "热乎", "家常"], avoid: [] },
+        { name: "西红柿鸡蛋刀削面", desc: "孩子接受度很高的山西经典面食午餐。", tags: ["午餐", "一周菜谱", "山西特色"], avoid: ["鸡蛋"] },
+        { name: "土豆胡萝卜炖排骨＋米饭", desc: "中午吃肉更合适，排骨炖烂后孩子更容易吃。", tags: ["午餐", "一周菜谱", "排骨"], avoid: ["猪肉"] },
+        { name: "肉末蒸蛋＋米饭＋清炒西兰花", desc: "肉和蛋搭配，营养比较全面。", tags: ["午餐", "一周菜谱", "孩子友好"], avoid: ["鸡蛋", "猪肉"] },
+        { name: "排骨冬瓜汤＋米饭", desc: "汤水足，排骨和冬瓜搭配比较清爽。", tags: ["午餐", "一周菜谱", "排骨"], avoid: ["猪肉"] },
+        { name: "过油肉儿童版＋米饭", desc: "减少调味，做成更适合孩子的版本。", tags: ["午餐", "一周菜谱", "山西特色"], avoid: ["猪肉"] },
+        { name: "山药玉米炖排骨＋花卷", desc: "山药和玉米偏甜，孩子一般比较接受。", tags: ["午餐", "一周菜谱", "排骨"], avoid: ["猪肉"] },
+        { name: "胡萝卜土豆烧鸡腿＋米饭", desc: "软烂一些更适合小孩。", tags: ["午餐", "一周菜谱", "家常"], avoid: ["鸡肉"] }
+      ],
+      dinner: [
+        { name: "鸡汤面", desc: "晚上吃比较舒服，不会太重。", tags: ["晚餐", "清淡", "热乎"], avoid: ["鸡肉"] },
+        { name: "肉末蒸蛋＋小米粥", desc: "嫩滑顺口，孩子通常比较喜欢。", tags: ["晚餐", "孩子友好", "软嫩"], avoid: ["鸡蛋", "猪肉"] },
+        { name: "土豆胡萝卜炖排骨", desc: "朔州家庭很常见，软烂香。", tags: ["晚餐", "营养", "家常"], avoid: ["猪肉"] },
+        { name: "番茄牛腩面", desc: "酸香开胃，有汤有面。", tags: ["晚餐", "面食", "开胃"], avoid: ["牛肉"] },
+        { name: "饺子", desc: "朔州家里很常做，晚餐也很合适。", tags: ["晚餐", "家常", "全家都能吃"], avoid: [] },
+        { name: "南瓜粥＋素包子", desc: "不想吃太油时很合适。", tags: ["晚餐", "清爽", "暖胃"], avoid: [] },
+        { name: "炒猫耳朵", desc: "山西面食里孩子往往会觉得有趣。", tags: ["晚餐", "山西特色", "有趣"], avoid: [] },
+        { name: "南瓜粥＋素包子＋清炒西兰花", desc: "晚上不吃肉时很合适，清淡又有饱腹感。", tags: ["晚餐", "一周菜谱", "清淡"], avoid: [] },
+        { name: "番茄鸡蛋挂面", desc: "热乎顺口，晚上吃比较舒服。", tags: ["晚餐", "一周菜谱", "面食"], avoid: ["鸡蛋"] },
+        { name: "馄饨（素馅或少肉版）＋拌黄瓜", desc: "晚餐偏清爽，孩子更容易消化。", tags: ["晚餐", "一周菜谱", "清爽"], avoid: [] },
+        { name: "小米粥＋鸡蛋羹＋馒头片", desc: "很适合孩子晚餐，软和好消化。", tags: ["晚餐", "一周菜谱", "孩子友好"], avoid: ["鸡蛋"] },
+        { name: "炒猫耳朵（素炒版）＋紫菜蛋花汤", desc: "保留山西特色，但晚餐做得更清淡。", tags: ["晚餐", "一周菜谱", "山西特色"], avoid: ["鸡蛋"] },
+        { name: "疙瘩汤＋素包子", desc: "晚上热乎又不油腻。", tags: ["晚餐", "一周菜谱", "热乎"], avoid: [] },
+        { name: "西红柿鸡蛋面＋清炒油麦菜", desc: "有主食有蔬菜，适合孩子晚上吃。", tags: ["晚餐", "一周菜谱", "清淡"], avoid: ["鸡蛋"] }
+      ]
+    };
+
+    const filterOptions = ["鸡蛋", "牛肉", "猪肉", "鸡肉", "豆制品", "奶制品"];
+    const typeLabels = { breakfast: "早餐", lunch: "午餐", dinner: "晚餐", all: "全部随机" };
+    const weekDays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+
+    let currentType = "all";
+    let spinRotation = 0;
+
+    const typeChips = document.getElementById("typeChips");
+    const filterBoxes = document.getElementById("filterBoxes");
+    const resultBox = document.getElementById("resultBox");
+    const menuList = document.getElementById("menuList");
+    const pickBtn = document.getElementById("pickBtn");
+    const pickThreeBtn = document.getElementById("pickThreeBtn");
+    const weekBtn = document.getElementById("weekBtn");
+    const avoidYesterday = document.getElementById("avoidYesterday");
+    const weekSection = document.getElementById("weekSection");
+    const weekGrid = document.getElementById("weekGrid");
+    const wheel = document.getElementById("wheel");
+    const spinBtn = document.getElementById("spinBtn");
+
+    function getSelectedAvoids() {
+      return [...document.querySelectorAll('input[name="avoidFood"]:checked')].map(el => el.value);
+    }
+
+    function getYesterdayKey() {
+      return `lastMeal_${currentType}`;
+    }
+
+    function saveLastMeal(item) {
+      localStorage.setItem(getYesterdayKey(), item.name);
+    }
+
+    function getLastMealName() {
+      return localStorage.getItem(getYesterdayKey()) || "";
+    }
+
+    function getPool(type) {
+      let pool;
+      if (type === "all") {
+        pool = [
+          ...meals.breakfast.map(item => ({ ...item, mealType: "早餐" })),
+          ...meals.lunch.map(item => ({ ...item, mealType: "午餐" })),
+          ...meals.dinner.map(item => ({ ...item, mealType: "晚餐" }))
+        ];
+      } else {
+        pool = meals[type].map(item => ({ ...item, mealType: typeLabels[type] }));
+      }
+
+      const avoids = getSelectedAvoids();
+      if (avoids.length) {
+        pool = pool.filter(item => !item.avoid.some(tag => avoids.includes(tag)));
+      }
+
+      if (avoidYesterday.checked) {
+        const lastMeal = getLastMealName();
+        const filtered = pool.filter(item => item.name !== lastMeal);
+        if (filtered.length) pool = filtered;
+      }
+
+      return pool;
+    }
+
+    function renderChips() {
+      const types = ["all", "breakfast", "lunch", "dinner"];
+      typeChips.innerHTML = "";
+      types.forEach(type => {
+        const btn = document.createElement("button");
+        btn.className = `chip ${currentType === type ? "active" : ""}`;
+        btn.textContent = typeLabels[type];
+        btn.onclick = () => {
+          currentType = type;
+          renderChips();
+          renderMenuList();
+          renderWheel();
+        };
+        typeChips.appendChild(btn);
+      });
+    }
+
+    function renderFilters() {
+      filterBoxes.innerHTML = "";
+      filterOptions.forEach(name => {
+        const label = document.createElement("label");
+        label.className = "toggle";
+        label.innerHTML = `<input type="checkbox" name="avoidFood" value="${name}" /> 不吃${name}`;
+        filterBoxes.appendChild(label);
+      });
+      filterBoxes.addEventListener("change", () => {
+        renderMenuList();
+        renderWheel();
+      });
+      avoidYesterday.addEventListener("change", () => {
+        renderMenuList();
+        renderWheel();
+      });
+    }
+
+    function renderMenuList() {
+      const pool = getPool(currentType);
+      menuList.innerHTML = "";
+      if (!pool.length) {
+        const div = document.createElement("div");
+        div.className = "list-item";
+        div.textContent = "当前筛选条件下没有合适菜单，可以减少忌口条件试试。";
+        menuList.appendChild(div);
+        return;
+      }
+      pool.slice(0, 12).forEach(item => {
+        const div = document.createElement("div");
+        div.className = "list-item";
+        div.textContent = `${item.mealType} · ${item.name}`;
+        menuList.appendChild(div);
+      });
+    }
+
+    function renderResult(item, extra = "") {
+      resultBox.innerHTML = `
+        <div class="meal-type">${item.mealType}</div>
+        <div class="meal-name">${item.name}</div>
+        <div class="meal-desc">${item.desc}${extra ? `<br><br>${extra}` : ""}</div>
+        <div class="meal-tags">${item.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}</div>
+      `;
+    }
+
+    function pickRandomFromPool(pool) {
+      if (!pool.length) return null;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function pickOne() {
+      const pool = getPool(currentType);
+      const item = pickRandomFromPool(pool);
+      if (!item) {
+        resultBox.innerHTML = `<div class="meal-name">没有可选菜单</div><div class="meal-desc">当前忌口太多了，放宽一点再试试。</div>`;
+        return;
+      }
+      saveLastMeal(item);
+      renderResult(item, "已经自动记录为今天/昨天吃过的菜，下次会尽量不重复。");
+      renderMenuList();
+      renderWheel();
+    }
+
+    function pickThree() {
+      const pool = [...getPool(currentType)];
+      if (!pool.length) {
+        resultBox.innerHTML = `<div class="meal-name">没有可选菜单</div><div class="meal-desc">当前忌口太多了，放宽一点再试试。</div>`;
+        return;
+      }
+      const picked = [];
+      while (pool.length && picked.length < 3) {
+        const index = Math.floor(Math.random() * pool.length);
+        picked.push(pool.splice(index, 1)[0]);
+      }
+      resultBox.innerHTML = picked.map(item => `
+        <div style="margin-bottom:16px; padding-bottom:16px; border-bottom:1px dashed #fdba74; width:100%; max-width:460px;">
+          <div class="meal-type">${item.mealType}</div>
+          <div style="font-size:26px; font-weight:800; margin-bottom:8px;">${item.name}</div>
+          <div class="meal-desc">${item.desc}</div>
+        </div>
+      `).join("");
+    }
+
+    function generateWeekMenu() {
+      const pool = [...getPool(currentType)];
+      weekGrid.innerHTML = "";
+      weekSection.style.display = "block";
+      if (!pool.length) {
+        weekGrid.innerHTML = `<div class="week-item">当前筛选条件下没有菜单可生成。</div>`;
+        return;
+      }
+      const used = new Set();
+      weekDays.forEach(day => {
+        let available = pool.filter(item => !used.has(item.name));
+        if (!available.length) {
+          used.clear();
+          available = [...pool];
+        }
+        const item = available[Math.floor(Math.random() * available.length)];
+        used.add(item.name);
+        const div = document.createElement("div");
+        div.className = "week-item";
+        div.innerHTML = `<div class="week-day">${day}</div><div>${item.mealType} · ${item.name}</div><div style="margin-top:6px; color:#9a3412; font-size:13px;">${item.desc}</div>`;
+        weekGrid.appendChild(div);
+      });
+    }
+
+    function renderWheel() {
+      const pool = getPool(currentType).slice(0, 8);
+      wheel.innerHTML = '<div class="wheel-center"></div>';
+      if (!pool.length) return;
+      const colors = ["#fed7aa", "#ffedd5", "#fde68a", "#fdba74", "#fecaca", "#ddd6fe", "#bfdbfe", "#bbf7d0"];
+      const step = 360 / pool.length;
+      let gradientParts = [];
+      pool.forEach((item, i) => {
+        const start = i * step;
+        const end = start + step;
+        gradientParts.push(`${colors[i % colors.length]} ${start}deg ${end}deg`);
+      });
+      wheel.style.background = `conic-gradient(${gradientParts.join(',')})`;
+      pool.forEach((item, i) => {
+        const label = document.createElement('div');
+        label.className = 'wheel-label';
+        const angle = i * step + step / 2;
+        label.style.transform = `rotate(${angle}deg) translate(56px, -6px)`;
+        label.textContent = item.name.length > 8 ? item.name.slice(0, 8) : item.name;
+        wheel.appendChild(label);
+      });
+    }
+
+    function spinWheel() {
+      const pool = getPool(currentType).slice(0, 8);
+      if (!pool.length) {
+        resultBox.innerHTML = `<div class="meal-name">没有可转的菜单</div><div class="meal-desc">当前筛选条件下没有菜可选。</div>`;
+        return;
+      }
+      const index = Math.floor(Math.random() * pool.length);
+      const step = 360 / pool.length;
+      const targetAngle = 360 * 5 + (360 - (index * step + step / 2));
+      spinRotation += targetAngle;
+      wheel.style.transform = `rotate(${spinRotation}deg)`;
+      setTimeout(() => {
+        const item = pool[index];
+        saveLastMeal(item);
+        renderResult(item, "这是转盘抽中的结果。已经记录，明天可避免重复。")
+        renderMenuList();
+        renderWheel();
+      }, 4100);
+    }
+
+    pickBtn.addEventListener("click", pickOne);
+    pickThreeBtn.addEventListener("click", pickThree);
+    weekBtn.addEventListener("click", generateWeekMenu);
+    spinBtn.addEventListener("click", spinWheel);
+
+    renderChips();
+    renderFilters();
+    renderMenuList();
+    renderWheel();
+  </script>
+</body>
+</html>
