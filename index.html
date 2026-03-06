@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>今天吃什么 - 朔州孩子版</title>
+  <title>宝宝你今天想吃什么</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -95,8 +95,8 @@
 <body>
   <div class="container">
     <div class="hero">
-      <h1>今天吃什么 · 朔州孩子版</h1>
-      <p class="subtitle">偏山西朔州家常口味 · 随机抽饭 · 忌口筛选 · 不和昨天重复 · 一周菜单 · 转盘抽签</p>
+      <h1>🍜🥟🍲 宝宝你今天想吃什么</h1>
+      <p class="subtitle">偏山西朔州家常口味 · 给宝宝随机选饭饭 · 忌口筛选 · 不和昨天重复 · 一周菜单 · 转盘抽签</p>
     </div>
 
     <div class="grid">
@@ -112,25 +112,32 @@
 
         <h2 class="section-title" style="margin-top:20px;">3. 开始随机</h2>
         <div class="actions">
-          <button class="primary" id="pickBtn">随机抽一个</button>
-          <button class="secondary" id="pickThreeBtn">给我 3 个备选</button>
-          <button class="secondary" id="weekBtn">生成一周菜单</button>
+          <button class="primary" id="pickBtn">给宝宝随机选一个</button>
+          <button class="secondary" id="pickThreeBtn">给宝宝 3 个备选</button>
+          <button class="secondary" id="weekBtn">生成一周三餐菜单</button>
+          <button class="secondary" id="favoriteBtn">收藏这道菜</button>
         </div>
 
         <div style="margin-top:18px;" class="result-box" id="resultBox">
           <div class="meal-type">欢迎使用</div>
-          <div class="meal-name">点一下开始抽</div>
-          <div class="meal-desc">已经加入朔州偏家常口味、忌口筛选、昨天不重复和一周菜单功能。</div>
+          <div class="meal-name">点一下，看看宝宝今天吃什么</div>
+          <div class="meal-desc">已经加入朔州偏家常口味、忌口筛选、昨天不重复、一周菜单和转盘抽签功能。</div>
         </div>
 
         <div style="margin-top:18px; display:none;" id="weekSection">
-          <h2 class="section-title">本周菜单</h2>
+          <h2 class="section-title">宝宝一周三餐菜单</h2>
+          <div class="actions" style="margin-bottom:14px;">
+            <button class="chip active" id="weekTabAll">全部</button>
+            <button class="chip" id="weekTabBreakfast">早餐</button>
+            <button class="chip" id="weekTabLunch">午餐</button>
+            <button class="chip" id="weekTabDinner">晚餐</button>
+          </div>
           <div class="week-grid" id="weekGrid"></div>
         </div>
       </div>
 
       <div class="card">
-        <h2 class="section-title">转盘抽签</h2>
+        <h2 class="section-title">宝宝转盘抽签</h2>
         <div class="wheel-wrap">
           <div style="position:relative;">
             <div class="wheel-pointer"></div>
@@ -139,24 +146,28 @@
             </div>
           </div>
           <div class="actions">
-            <button class="primary" id="spinBtn">点一下转盘抽签</button>
+            <button class="primary" id="spinBtn">点一下帮宝宝抽</button>
           </div>
           <div class="small-note">转盘内容会根据你选的时间段和忌口条件自动变化。</div>
         </div>
 
         <h2 class="section-title" style="margin-top:24px;">可选菜单示例</h2>
+        <div style="margin: 0 0 18px;">
+          <h3 style="margin:0 0 10px; font-size:18px; color:#7c2d12;">宝宝最爱收藏</h3>
+          <div class="list" id="favoriteList"></div>
+        </div>
         <div class="list" id="menuList"></div>
       </div>
     </div>
 
-    <div class="footer">这个页面可以直接放到 GitHub Pages。后面还可以继续加“收藏最爱”“孩子评分”“买菜清单”“打印一周菜单”。</div>
+    <div class="footer">这个页面可以直接放到 GitHub Pages。后面还可以继续加“宝宝最爱”“吃饭评分”“买菜清单”“打印一周菜单”。</div>
   </div>
 
   <script>
     const meals = {
       breakfast: [
         { name: "小米粥＋鸡蛋＋花卷", desc: "朔州家里常见早餐，暖胃又稳妥。", tags: ["早餐", "朔州家常", "软和"], avoid: [] },
-        { name: "山药南瓜粥＋馒头片", desc: "甜口一点，孩子接受度高。", tags: ["早餐", "营养", "软糯"], avoid: [] },
+        { name: "山药南瓜粥＋馒头", desc: "甜口一点，孩子接受度高。", tags: ["早餐", "营养", "软糯"], avoid: [] },
         { name: "西红柿鸡蛋挂面", desc: "热乎顺口，早上吃很舒服。", tags: ["早餐", "面食", "热乎"], avoid: ["鸡蛋"] },
         { name: "豆浆＋鸡蛋饼", desc: "上学前比较省事，也顶饱。", tags: ["早餐", "方便", "家常"], avoid: ["豆制品", "鸡蛋"] },
         { name: "小米南瓜粥＋素包子", desc: "朔州口味偏家常，适合孩子。", tags: ["早餐", "朔州", "清淡"], avoid: [] },
@@ -166,7 +177,7 @@
         { name: "山药粥＋蒸红薯＋鸡蛋饼", desc: "甜口偏软，适合孩子早上吃。", tags: ["早餐", "一周菜谱", "营养"], avoid: ["鸡蛋"] },
         { name: "牛奶燕麦粥＋小包子", desc: "简单稳妥，孩子接受度高。", tags: ["早餐", "一周菜谱", "方便"], avoid: ["奶制品"] },
         { name: "豆浆＋发面饼＋水煮蛋", desc: "朔州家里常见搭配，顶饱又不重。", tags: ["早餐", "一周菜谱", "家常"], avoid: ["豆制品", "鸡蛋"] },
-        { name: "小米粥＋馒头片＋蒸蛋", desc: "温和顺口，适合上学前。", tags: ["早餐", "一周菜谱", "清淡"], avoid: ["鸡蛋"] },
+        { name: "小米粥＋馒头＋蒸蛋", desc: "温和顺口，适合上学前。", tags: ["早餐", "一周菜谱", "清淡"], avoid: ["鸡蛋"] },
         { name: "南瓜小米粥＋小肉包", desc: "早餐稍微顶饱一点，适合活动量大的孩子。", tags: ["早餐", "一周菜谱", "家常"], avoid: ["猪肉"] },
         { name: "红枣小米粥＋蒸南瓜＋鸡蛋", desc: "颜色好看，孩子更愿意吃。", tags: ["早餐", "一周菜谱", "暖胃"], avoid: ["鸡蛋"] }
       ],
@@ -198,7 +209,7 @@
         { name: "南瓜粥＋素包子＋清炒西兰花", desc: "晚上不吃肉时很合适，清淡又有饱腹感。", tags: ["晚餐", "一周菜谱", "清淡"], avoid: [] },
         { name: "番茄鸡蛋挂面", desc: "热乎顺口，晚上吃比较舒服。", tags: ["晚餐", "一周菜谱", "面食"], avoid: ["鸡蛋"] },
         { name: "馄饨（素馅或少肉版）＋拌黄瓜", desc: "晚餐偏清爽，孩子更容易消化。", tags: ["晚餐", "一周菜谱", "清爽"], avoid: [] },
-        { name: "小米粥＋鸡蛋羹＋馒头片", desc: "很适合孩子晚餐，软和好消化。", tags: ["晚餐", "一周菜谱", "孩子友好"], avoid: ["鸡蛋"] },
+        { name: "小米粥＋鸡蛋羹＋馒头", desc: "很适合孩子晚餐，软和好消化。", tags: ["晚餐", "一周菜谱", "孩子友好"], avoid: ["鸡蛋"] },
         { name: "炒猫耳朵（素炒版）＋紫菜蛋花汤", desc: "保留山西特色，但晚餐做得更清淡。", tags: ["晚餐", "一周菜谱", "山西特色"], avoid: ["鸡蛋"] },
         { name: "疙瘩汤＋素包子", desc: "晚上热乎又不油腻。", tags: ["晚餐", "一周菜谱", "热乎"], avoid: [] },
         { name: "西红柿鸡蛋面＋清炒油麦菜", desc: "有主食有蔬菜，适合孩子晚上吃。", tags: ["晚餐", "一周菜谱", "清淡"], avoid: ["鸡蛋"] }
@@ -216,17 +227,39 @@
     const filterBoxes = document.getElementById("filterBoxes");
     const resultBox = document.getElementById("resultBox");
     const menuList = document.getElementById("menuList");
+    const favoriteList = document.getElementById("favoriteList");
     const pickBtn = document.getElementById("pickBtn");
     const pickThreeBtn = document.getElementById("pickThreeBtn");
     const weekBtn = document.getElementById("weekBtn");
     const avoidYesterday = document.getElementById("avoidYesterday");
     const weekSection = document.getElementById("weekSection");
     const weekGrid = document.getElementById("weekGrid");
+    const weekTabAll = document.getElementById("weekTabAll");
+    const weekTabBreakfast = document.getElementById("weekTabBreakfast");
+    const weekTabLunch = document.getElementById("weekTabLunch");
+    const weekTabDinner = document.getElementById("weekTabDinner");
     const wheel = document.getElementById("wheel");
     const spinBtn = document.getElementById("spinBtn");
+    const favoriteBtn = document.getElementById("favoriteBtn");
 
     function getSelectedAvoids() {
       return [...document.querySelectorAll('input[name="avoidFood"]:checked')].map(el => el.value);
+    }
+
+    function getFavoriteKey() {
+      return 'favoriteMeals_baby';
+    }
+
+    function getFavorites() {
+      try {
+        return JSON.parse(localStorage.getItem(getFavoriteKey()) || '[]');
+      } catch {
+        return [];
+      }
+    }
+
+    function saveFavorites(list) {
+      localStorage.setItem(getFavoriteKey(), JSON.stringify(list));
     }
 
     function getYesterdayKey() {
@@ -302,6 +335,29 @@
       });
     }
 
+    function renderFavoriteList() {
+      const favorites = getFavorites();
+      favoriteList.innerHTML = '';
+      if (!favorites.length) {
+        favoriteList.innerHTML = '<div class="list-item">还没有收藏，抽到宝宝爱吃的可以点“收藏这道菜”。</div>';
+        return;
+      }
+      favorites.slice(0, 8).forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `${item.mealType} · ${item.name} <span style="color:#ea580c; cursor:pointer; float:right;" data-remove="${item.name}">删除</span>`;
+        favoriteList.appendChild(div);
+      });
+      favoriteList.querySelectorAll('[data-remove]').forEach(el => {
+        el.addEventListener('click', () => {
+          const name = el.getAttribute('data-remove');
+          const next = getFavorites().filter(item => item.name !== name);
+          saveFavorites(next);
+          renderFavoriteList();
+        });
+      });
+    }
+
     function renderMenuList() {
       const pool = getPool(currentType);
       menuList.innerHTML = "";
@@ -321,6 +377,7 @@
     }
 
     function renderResult(item, extra = "") {
+      window.currentPickedMeal = item;
       resultBox.innerHTML = `
         <div class="meal-type">${item.mealType}</div>
         <div class="meal-name">${item.name}</div>
@@ -367,28 +424,81 @@
       `).join("");
     }
 
-    function generateWeekMenu() {
-      const pool = [...getPool(currentType)];
-      weekGrid.innerHTML = "";
-      weekSection.style.display = "block";
-      if (!pool.length) {
-        weekGrid.innerHTML = `<div class="week-item">当前筛选条件下没有菜单可生成。</div>`;
-        return;
+    function pickUniqueFromPool(pool, used) {
+      let available = pool.filter(item => !used.has(item.name));
+      if (!available.length) {
+        used.clear();
+        available = [...pool];
       }
-      const used = new Set();
-      weekDays.forEach(day => {
-        let available = pool.filter(item => !used.has(item.name));
-        if (!available.length) {
-          used.clear();
-          available = [...pool];
+      const item = available[Math.floor(Math.random() * available.length)];
+      used.add(item.name);
+      return item;
+    }
+
+    function renderWeekCards(type, weekData) {
+      weekGrid.innerHTML = '';
+      const tabMap = {
+        all: weekTabAll,
+        breakfast: weekTabBreakfast,
+        lunch: weekTabLunch,
+        dinner: weekTabDinner,
+      };
+      [weekTabAll, weekTabBreakfast, weekTabLunch, weekTabDinner].forEach(btn => btn.classList.remove('active'));
+      tabMap[type].classList.add('active');
+
+      weekDays.forEach((day, index) => {
+        const div = document.createElement('div');
+        div.className = 'week-item';
+
+        if (type === 'all') {
+          div.innerHTML = `
+            <div class="week-day">${day}</div>
+            <div><strong>早餐：</strong>${weekData.breakfast[index].name}</div>
+            <div style="margin-top:6px;"><strong>午餐：</strong>${weekData.lunch[index].name}</div>
+            <div style="margin-top:6px;"><strong>晚餐：</strong>${weekData.dinner[index].name}</div>
+          `;
+        } else {
+          const item = weekData[type][index];
+          div.innerHTML = `
+            <div class="week-day">${day}</div>
+            <div>${item.name}</div>
+            <div style="margin-top:6px; color:#9a3412; font-size:13px;">${item.desc}</div>
+          `;
         }
-        const item = available[Math.floor(Math.random() * available.length)];
-        used.add(item.name);
-        const div = document.createElement("div");
-        div.className = "week-item";
-        div.innerHTML = `<div class="week-day">${day}</div><div>${item.mealType} · ${item.name}</div><div style="margin-top:6px; color:#9a3412; font-size:13px;">${item.desc}</div>`;
         weekGrid.appendChild(div);
       });
+    }
+
+    function generateWeekMenu() {
+      const breakfastPool = getPool('breakfast');
+      const lunchPool = getPool('lunch');
+      const dinnerPool = getPool('dinner');
+      weekGrid.innerHTML = '';
+      weekSection.style.display = 'block';
+
+      if (!breakfastPool.length || !lunchPool.length || !dinnerPool.length) {
+        weekGrid.innerHTML = `<div class="week-item">当前筛选条件下，早/中/晚至少有一个餐段没有可用菜单，请减少忌口条件后再试。</div>`;
+        return;
+      }
+
+      const usedBreakfast = new Set();
+      const usedLunch = new Set();
+      const usedDinner = new Set();
+
+      const weekData = {
+        breakfast: [],
+        lunch: [],
+        dinner: []
+      };
+
+      weekDays.forEach(() => {
+        weekData.breakfast.push(pickUniqueFromPool(breakfastPool, usedBreakfast));
+        weekData.lunch.push(pickUniqueFromPool(lunchPool, usedLunch));
+        weekData.dinner.push(pickUniqueFromPool(dinnerPool, usedDinner));
+      });
+
+      window.currentWeekMenu = weekData;
+      renderWeekCards('all', weekData);
     }
 
     function renderWheel() {
@@ -414,6 +524,23 @@
       });
     }
 
+    function addCurrentToFavorites() {
+      const item = window.currentPickedMeal;
+      if (!item) {
+        resultBox.innerHTML = `<div class="meal-name">还没有可收藏的菜</div><div class="meal-desc">先随机抽一个，或者先转一下转盘，再来收藏。</div>`;
+        return;
+      }
+      const favorites = getFavorites();
+      if (favorites.some(f => f.name === item.name)) {
+        renderResult(item, '这道菜已经在宝宝最爱收藏里了。');
+        return;
+      }
+      favorites.unshift({ name: item.name, mealType: item.mealType, desc: item.desc, tags: item.tags });
+      saveFavorites(favorites);
+      renderFavoriteList();
+      renderResult(item, '已经加入“宝宝最爱收藏”。');
+    }
+
     function spinWheel() {
       const pool = getPool(currentType).slice(0, 8);
       if (!pool.length) {
@@ -434,15 +561,22 @@
       }, 4100);
     }
 
+    weekTabAll?.addEventListener('click', () => window.currentWeekMenu && renderWeekCards('all', window.currentWeekMenu));
+    weekTabBreakfast?.addEventListener('click', () => window.currentWeekMenu && renderWeekCards('breakfast', window.currentWeekMenu));
+    weekTabLunch?.addEventListener('click', () => window.currentWeekMenu && renderWeekCards('lunch', window.currentWeekMenu));
+    weekTabDinner?.addEventListener('click', () => window.currentWeekMenu && renderWeekCards('dinner', window.currentWeekMenu));
+
     pickBtn.addEventListener("click", pickOne);
     pickThreeBtn.addEventListener("click", pickThree);
     weekBtn.addEventListener("click", generateWeekMenu);
     spinBtn.addEventListener("click", spinWheel);
+    favoriteBtn.addEventListener("click", addCurrentToFavorites);
 
     renderChips();
     renderFilters();
     renderMenuList();
     renderWheel();
+    renderFavoriteList();
   </script>
 </body>
 </html>
